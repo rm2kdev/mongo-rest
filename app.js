@@ -5,6 +5,7 @@ var express = require('express');
 var routes = require('./routes');
 var http = require('http');
 var path = require('path');
+var CrossDomain = require(__dirname + '/middleware/CrossDomain');
 
 var app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(express.bodyParser());
+app.use(CrossDomain.headers);
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
