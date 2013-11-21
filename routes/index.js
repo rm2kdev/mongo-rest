@@ -10,6 +10,11 @@ exports.query = function(req, res){
 
     var query = req.query.query ? JSON.parse(req.query.query) : {};
 
+    //convert any incoming id's in the query to proper bson id's
+    if (query._id){
+        query._id = new BSON.ObjectID(query._id)
+    }
+
     // Providing an id overwrites giving a query in the URL
     if (req.params.id) {
         query = {'_id': new BSON.ObjectID(req.params.id)};
@@ -17,6 +22,9 @@ exports.query = function(req, res){
     var options = req.params.options || {};
 
     var test = ['limit','sort','fields','skip','hint','explain','snapshot','timeout'];
+
+    console.log(query)
+    console.log(req.query)
 
     for( o in req.query ) {
         if( test.indexOf(o) >= 0 ) {
@@ -56,7 +64,7 @@ exports.query = function(req, res){
 
 };
 
-//Insert asd
+//Insert
 exports.insert = function(req, res) {
     if(req.body) {
         var db = new mongo.Db(req.params.db, new mongo.Server(config.db.host, config.db.port, {'auto_reconnect':true}), {'safe':true});
@@ -83,6 +91,8 @@ exports.insert = function(req, res) {
 
 exports.update = function(req, res) {
     var spec = {'_id': new BSON.ObjectID(req.params.id)};
+
+    delete req.body._id;
 
     var db = new mongo.Db(req.params.db, new mongo.Server(config.db.host, config.db.port, {'auto_reconnect':true}), {'safe':true});
     db.open(function(err, db) {
